@@ -655,7 +655,7 @@ function buildMCQ() {
     card.className = "question-card";
     card.id = `qcard-${i + 1}`;
     card.innerHTML = `
-      <div class="question-number">Question ${i + 1} / ${MCQ_QUESTIONS.length} <span style="color:var(--accent);font-size:10px;margin-left:8px;">· 0,5 pt</span></div>
+      <div class="question-number">Question ${i + 1} / ${MCQ_QUESTIONS.length} <span style="color:var(--accent);font-size:10px;margin-left:8px;">· 0,25 pt</span></div>
       <div class="question-text">${q.q}</div>
       <div class="options">
         ${q.opts
@@ -770,7 +770,7 @@ function buildP4() {
     card.className = "question-card";
     card.id = `semcard-${i + 1}`;
     card.innerHTML = `
-      <div class="question-number">Question ${i + 1} / ${SEM_QUESTIONS.length} <span style="color:var(--accent-sem);font-size:10px;margin-left:8px;">· 0,5 pt</span></div>
+      <div class="question-number">Question ${i + 1} / ${SEM_QUESTIONS.length} <span style="color:var(--accent-sem);font-size:10px;margin-left:8px;">· 0,25 pt</span></div>
       <div class="question-text">${q.q}</div>
       <div class="options">
         ${q.opts
@@ -880,7 +880,7 @@ function renderSidebarNav() {
     {
       num: 1,
       name: "QCM SEO",
-      pts: "10 pts",
+      pts: "5 pts",
       answered: countP1(),
       total: MCQ_QUESTIONS.length,
     },
@@ -901,7 +901,7 @@ function renderSidebarNav() {
     {
       num: 4,
       name: "Sémantique HTML",
-      pts: "6 pts",
+      pts: "3 pts",
       answered: countP4(),
       total: SEM_QUESTIONS.length,
     },
@@ -1086,7 +1086,7 @@ async function submitExam() {
     mcqResults.push({ q: i + 1, ans: ans || "—", correct: isCorrect });
     CORRECT_LABELS.push(isCorrect ? ans : await deriveCorrectAnswer(i));
   }
-  const mcqScore = (correctCount * 0.5).toFixed(1);
+  const mcqScore = (correctCount * 0.25).toFixed(2);
 
   // Score P4 (Sémantique HTML)
   let semCorrectCount = 0;
@@ -1099,7 +1099,7 @@ async function submitExam() {
     semResults.push({ q: i + 1, ans: ans || "—", correct: isCorrect });
     SEM_CORRECT_LABELS.push(isCorrect ? ans : await deriveSemCorrectAnswer(i));
   }
-  const semScore = (semCorrectCount * 0.5).toFixed(1);
+  const semScore = (semCorrectCount * 0.25).toFixed(2);
 
   // Build email body
   let body = `========================================
@@ -1115,7 +1115,7 @@ Durée utilisée: ${elapsedH}h ${String(elapsedM).padStart(2, "0")}min
 ========================================
 PARTIE 1 — QCM SEO (score automatique)
 ========================================
-Score : ${mcqScore} / 10 pts (${correctCount} bonnes réponses sur ${MCQ_QUESTIONS.length})
+Score : ${mcqScore} / 5 pts (${correctCount} bonnes réponses sur ${MCQ_QUESTIONS.length})
 
 `;
 
@@ -1152,7 +1152,7 @@ ${state.p3Answer || "(non renseigné)"}
 ========================================
 PARTIE 4 — QCM SÉMANTIQUE HTML (score automatique)
 ========================================
-Score : ${semScore} / 6 pts (${semCorrectCount} bonnes réponses sur ${SEM_QUESTIONS.length})
+Score : ${semScore} / 3 pts (${semCorrectCount} bonnes réponses sur ${SEM_QUESTIONS.length})
 
 `;
 
@@ -1165,11 +1165,11 @@ Score : ${semScore} / 6 pts (${semCorrectCount} bonnes réponses sur ${SEM_QUEST
 
   body += `
 ========================================
-Score automatique P1 : ${mcqScore} / 10 pts
-Score automatique P4 : ${semScore} / 6 pts
+Score automatique P1 : ${mcqScore} / 5 pts
+Score automatique P4 : ${semScore} / 3 pts
 Parties 2 & 3 : à corriger manuellement (12 pts)
-Score MCQ total automatique : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed(1)} / 16 pts
-Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed(1)} / 28 pts
+Score MCQ total automatique : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed(2)} / 8 pts
+Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed(2)} / 20 pts
 ========================================`;
 
   const submissionData = {
@@ -1182,7 +1182,7 @@ Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed
     },
     part1: {
       score: parseFloat(mcqScore),
-      maxScore: 8,
+      maxScore: 5,
       answers: state.mcqAnswers,
       results: mcqResults,
     },
@@ -1198,7 +1198,7 @@ Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed
     },
     part4: {
       score: parseFloat(semScore),
-      maxScore: 6,
+      maxScore: 3,
       answers: state.semAnswers,
       results: semResults,
     },
