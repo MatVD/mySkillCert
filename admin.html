@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MySkillCert — Interface Formateur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8fafc;--sidebar-bg:#1e2d4a;--accent:#3b82f6;--accent-dark:#2563eb;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --text:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--card:#ffffff;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.14);--radius:8px;
+  --font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.6}
+
+/* ── LOGIN SCREEN ── */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;
+  background:linear-gradient(135deg,#f8fafc 0%,#e8f0fe 100%)}
+.login-card{background:var(--card);border-radius:16px;box-shadow:var(--shadow-lg);padding:48px;width:100%;max-width:420px}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo-icon{width:44px;height:44px;background:var(--sidebar-bg);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;color:white;font-size:15px;font-weight:700;font-family:var(--mono)}
+.login-logo h1{font-size:22px;font-weight:700}
+.login-role{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;
+  font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:6px}
+.form-group input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font);font-size:15px;outline:none;transition:border-color .15s}
+.form-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.btn-primary{display:block;width:100%;padding:12px;background:var(--sidebar-bg);color:white;
+  border:none;border-radius:var(--radius);font-family:var(--font);font-size:15px;
+  font-weight:600;cursor:pointer;transition:background .15s;margin-top:4px}
+.btn-primary:hover{background:#2a3f63}
+.login-error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;border-radius:var(--radius);
+  padding:10px 14px;font-size:13px;margin-top:12px;display:none}
+
+/* ── MAIN APP ── */
+#screen-app{display:none;flex-direction:column;min-height:100vh}
+
+/* Top bar */
+.topbar{background:var(--sidebar-bg);color:white;padding:0 24px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-brand .logo-icon{width:36px;height:36px;font-size:12px}
+.topbar-brand h1{font-size:17px;font-weight:700}
+.topbar-badge{background:rgba(255,255,255,.15);font-size:11px;padding:3px 10px;
+  border-radius:20px;font-weight:500}
+.topbar-right{display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.7)}
+.btn-logout{background:rgba(255,255,255,.12);border:none;color:white;padding:6px 14px;
+  border-radius:var(--radius);font-family:var(--font);font-size:13px;cursor:pointer;transition:background .15s}
+.btn-logout:hover{background:rgba(255,255,255,.22)}
+
+/* Stats bar */
+.stats-bar{background:white;border-bottom:1px solid var(--border);padding:14px 24px;
+  display:flex;gap:24px;flex-wrap:wrap}
+.stat-item{display:flex;flex-direction:column;gap:2px}
+.stat-value{font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+.stat-item.success .stat-value{color:var(--success)}
+.stat-item.warning .stat-value{color:var(--warning)}
+.stat-item.accent .stat-value{color:var(--accent)}
+
+/* Main area */
+.main-area{flex:1;padding:24px;max-width:1400px;width:100%;margin:0 auto}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar h2{font-size:17px;font-weight:700;flex:1}
+.search-input{padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font);font-size:14px;outline:none;width:220px;transition:border-color .15s}
+.search-input:focus{border-color:var(--accent)}
+.filter-select{padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font);font-size:14px;outline:none;cursor:pointer;background:white}
+.btn-refresh{padding:8px 14px;background:#f1f5f9;border:1.5px solid var(--border);
+  border-radius:var(--radius);font-family:var(--font);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:background .12s}
+.btn-refresh:hover{background:#e2e8f0}
+
+/* Table */
+.table-wrap{background:white;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.submissions-table{width:100%;border-collapse:collapse;font-size:13px}
+.submissions-table th{text-align:left;padding:11px 14px;background:#f8fafc;
+  border-bottom:1px solid var(--border);color:var(--text-muted);font-weight:600;
+  font-size:11px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.submissions-table td{padding:11px 14px;border-bottom:1px solid #f8fafc;vertical-align:middle}
+.submissions-table tr:last-child td{border-bottom:none}
+.submissions-table tbody tr:hover{background:#f8fafc}
+.submissions-table th.sortable{cursor:pointer;user-select:none}
+.submissions-table th.sortable:hover{color:var(--text)}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-pending{background:#fef3c7;color:#92400e}
+.badge-partial{background:#dbeafe;color:#1d4ed8}
+.badge-graded{background:#d1fae5;color:#065f46}
+
+.score-cell{font-family:var(--mono);font-size:12px}
+.score-auto{color:var(--accent);font-weight:600}
+.score-manual{color:var(--text-muted)}
+.score-total{color:var(--success);font-weight:700}
+.score-dash{color:#cbd5e1}
+
+.btn-grade{padding:5px 12px;background:var(--accent);color:white;border:none;
+  border-radius:var(--radius);font-family:var(--font);font-size:12px;font-weight:600;
+  cursor:pointer;transition:background .12s;white-space:nowrap}
+.btn-grade:hover{background:var(--accent-dark)}
+.btn-grade.done{background:#10b981}
+.btn-grade.done:hover{background:#059669}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+
+/* Loading */
+.loading-row td{text-align:center;padding:40px;color:var(--text-muted);font-size:14px}
+
+/* ── GRADING MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;
+  display:flex;align-items:flex-start;justify-content:center;padding:20px;
+  overflow-y:auto;backdrop-filter:blur(3px)}
+.modal-overlay.hidden{display:none}
+.modal-box{background:white;border-radius:16px;width:100%;max-width:900px;
+  box-shadow:var(--shadow-lg);margin:auto;overflow:hidden}
+
+.modal-header{background:var(--sidebar-bg);color:white;padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-header h2{font-size:18px;font-weight:700}
+.modal-header .student-meta{font-size:13px;color:rgba(255,255,255,.7);margin-top:3px}
+.btn-close{background:rgba(255,255,255,.15);border:none;color:white;width:32px;height:32px;
+  border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:background .12s;flex-shrink:0}
+.btn-close:hover{background:rgba(255,255,255,.3)}
+
+.modal-body{padding:24px;overflow-y:auto;max-height:calc(100vh - 200px)}
+
+/* Auto scores summary */
+.auto-scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;
+  margin-bottom:24px}
+.auto-score-card{background:#f8fafc;border-radius:var(--radius);padding:14px 16px;
+  border-left:3px solid var(--accent)}
+.auto-score-card .label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  color:var(--text-muted);font-weight:600;margin-bottom:4px}
+.auto-score-card .value{font-size:20px;font-weight:700;font-family:var(--mono);color:var(--accent)}
+.auto-score-card .sub{font-size:11px;color:var(--text-muted)}
+
+/* MCQ detail table */
+.mcq-mini-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px}
+.mcq-mini-table th{padding:5px 8px;background:#f1f5f9;text-align:left;
+  color:var(--text-muted);font-size:10px;text-transform:uppercase}
+.mcq-mini-table td{padding:5px 8px;border-bottom:1px solid #f8fafc}
+.correct-ans{color:var(--success);font-weight:600}
+.wrong-ans{color:var(--danger);font-weight:600}
+
+/* Section in modal */
+.modal-section{margin-bottom:28px}
+.modal-section-title{font-size:14px;font-weight:700;color:var(--text);
+  padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:space-between}
+.modal-section-title .pts-badge{font-size:11px;font-weight:500;color:var(--text-muted);
+  background:#f1f5f9;padding:2px 8px;border-radius:20px}
+
+/* Error answer cards (read-only) */
+.answer-cards{display:flex;flex-direction:column;gap:10px}
+.answer-card{background:#f8fafc;border-radius:var(--radius);padding:12px 16px;
+  border-left:3px solid var(--border)}
+.answer-card .card-num{font-size:11px;font-weight:700;color:var(--text-muted);
+  text-transform:uppercase;margin-bottom:8px}
+.answer-card .field-row{display:grid;grid-template-columns:100px 1fr;gap:6px;
+  font-size:12px;margin-bottom:4px;align-items:baseline}
+.answer-card .field-row:last-child{margin-bottom:0}
+.answer-card .field-label{color:var(--text-muted);font-weight:500;text-transform:uppercase;
+  font-size:10px;letter-spacing:.04em}
+.answer-card .field-val{color:var(--text);line-height:1.5}
+.answer-card .empty-val{color:#cbd5e1;font-style:italic}
+
+/* P3 rewrite */
+.p3-answer{font-family:var(--mono);font-size:12px;background:#1a1a2e;color:#e2e8f0;
+  padding:14px;border-radius:var(--radius);max-height:300px;overflow-y:auto;
+  white-space:pre-wrap;word-break:break-all;line-height:1.6}
+
+/* Score inputs */
+.score-inputs-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;margin-top:20px;background:#f8fafc;border-radius:var(--radius);padding:18px}
+.score-inputs-row h4{font-size:13px;font-weight:600;margin-bottom:12px;
+  grid-column:1/-1;color:var(--text)}
+.score-input-group label{display:block;font-size:12px;font-weight:500;
+  color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.score-input-group input{width:100%;padding:8px 12px;border:1.5px solid var(--border);
+  border-radius:var(--radius);font-family:var(--mono);font-size:15px;font-weight:600;
+  outline:none;transition:border-color .15s}
+.score-input-group input:focus{border-color:var(--accent)}
+.score-input-group .max-pts{font-size:11px;color:var(--text-muted);margin-top:4px}
+
+.notes-group{margin-top:14px;grid-column:1/-1}
+.notes-group label{display:block;font-size:12px;font-weight:500;
+  color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.notes-group textarea{width:100%;min-height:72px;padding:8px 12px;
+  border:1.5px solid var(--border);border-radius:var(--radius);font-family:var(--font);
+  font-size:13px;outline:none;resize:vertical;transition:border-color .15s}
+.notes-group textarea:focus{border-color:var(--accent)}
+
+/* Total preview */
+.total-preview{background:var(--sidebar-bg);color:white;border-radius:var(--radius);
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+  margin-top:16px}
+.total-preview .label{font-size:13px;color:rgba(255,255,255,.7)}
+.total-preview .value{font-family:var(--mono);font-size:24px;font-weight:700}
+
+/* Modal footer */
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.btn-save{padding:10px 24px;background:var(--success);color:white;border:none;
+  border-radius:var(--radius);font-family:var(--font);font-size:14px;font-weight:600;
+  cursor:pointer;transition:background .12s}
+.btn-save:hover{background:#059669}
+.btn-save:disabled{background:#94a3b8;cursor:not-allowed}
+.btn-cancel{padding:10px 18px;background:#f1f5f9;border:1.5px solid var(--border);
+  border-radius:var(--radius);font-family:var(--font);font-size:14px;cursor:pointer;
+  transition:background .12s}
+.btn-cancel:hover{background:#e2e8f0}
+.save-feedback{font-size:13px;color:var(--success);font-weight:500;opacity:0;transition:opacity .3s}
+.save-feedback.visible{opacity:1}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:#1e293b;color:white;
+  padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:1000}
+.toast.visible{opacity:1}
+
+/* Collapsible MCQ detail */
+.collapse-btn{background:none;border:none;cursor:pointer;font-size:12px;color:var(--accent);
+  font-family:var(--font);font-weight:500;padding:0}
+.collapse-btn:hover{text-decoration:underline}
+.collapsible{overflow:hidden;transition:max-height .25s ease}
+.collapsible.closed{max-height:0}
+.collapsible.open{max-height:2000px}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">SC</div>
+      <h1>MySkillCert</h1>
+    </div>
+    <span class="login-role">🔒 Interface Formateur</span>
+    <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+      Accès réservé. Entrez votre token d'administration pour accéder aux copies.
+    </p>
+    <div class="form-group">
+      <label for="token-input">Token d'administration</label>
+      <input type="password" id="token-input" placeholder="••••••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" onclick="login()">Accéder au dashboard →</button>
+    <div class="login-error" id="login-error">Token incorrect. Vérifiez vos identifiants.</div>
+  </div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div id="screen-app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="logo-icon">SC</div>
+      <h1>MySkillCert</h1>
+      <span class="topbar-badge">Formateur</span>
+    </div>
+    <div class="topbar-right">
+      <span id="topbar-user">—</span>
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-item">
+      <span class="stat-value" id="stat-total">—</span>
+      <span class="stat-label">Copies reçues</span>
+    </div>
+    <div class="stat-item success">
+      <span class="stat-value" id="stat-graded">—</span>
+      <span class="stat-label">Corrigées</span>
+    </div>
+    <div class="stat-item warning">
+      <span class="stat-value" id="stat-pending">—</span>
+      <span class="stat-label">En attente</span>
+    </div>
+    <div class="stat-item accent">
+      <span class="stat-value" id="stat-avg">—</span>
+      <span class="stat-label">Moyenne / 20</span>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <div class="toolbar">
+      <h2>Copies d'examen</h2>
+      <input type="text" class="search-input" id="search-input"
+        placeholder="🔍 Rechercher un élève…" oninput="filterTable()">
+      <select class="filter-select" id="filter-status" onchange="filterTable()">
+        <option value="all">Tous les statuts</option>
+        <option value="pending">Non corrigées</option>
+        <option value="partial">Partiellement corrigées</option>
+        <option value="graded">Corrigées</option>
+      </select>
+      <button class="btn-refresh" onclick="loadSubmissions()">⟳ Actualiser</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="submissions-table">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortBy('name')">Élève ↕</th>
+            <th class="sortable" onclick="sortBy('date')">Date / Heure ↕</th>
+            <th>Durée</th>
+            <th title="P1 QCM SEO (auto)">P1<br><span style="font-size:9px;font-weight:400">/ 5 auto</span></th>
+            <th title="P4 QCM Sémantique (auto)">P4<br><span style="font-size:9px;font-weight:400">/ 3 auto</span></th>
+            <th title="Score auto P1+P4">Auto<br><span style="font-size:9px;font-weight:400">/ 8</span></th>
+            <th title="P2 Analyse HTML (manuel)">P2<br><span style="font-size:9px;font-weight:400">/ 4</span></th>
+            <th title="P3 Réécriture HTML (manuel)">P3<br><span style="font-size:9px;font-weight:400">/ 4</span></th>
+            <th title="P5 Sitemap/Robots (manuel)">P5<br><span style="font-size:9px;font-weight:400">/ 4</span></th>
+            <th title="Score total /20">Total<br><span style="font-size:9px;font-weight:400">/ 20</span></th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="submissions-tbody">
+          <tr class="loading-row"><td colspan="12">Chargement des copies…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── GRADING MODAL ── -->
+<div class="modal-overlay hidden" id="grading-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <h2 id="modal-title">Copie de —</h2>
+        <div class="student-meta" id="modal-meta">—</div>
+      </div>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body" id="modal-body">
+      <!-- injected by JS -->
+    </div>
+
+    <div class="modal-footer">
+      <span class="save-feedback" id="save-feedback">✓ Scores enregistrés !</span>
+      <button class="btn-cancel" onclick="closeModal()">Fermer</button>
+      <button class="btn-save" id="btn-save" onclick="saveGrades()">💾 Enregistrer les notes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ── STATE ── */
+let token = '';
+let allSubmissions = [];
+let currentId = null;
+let sortField = 'date';
+let sortAsc = false;
+
+const ANSWER_LABELS_P1 = [
+  'Fonction robots.txt','Balise meta noindex','Nombre de h1','Attribut defer',
+  'Mesure LCP','Longueur title','Redirection SEO','Format image 2025',
+  'Balise canonical','Seuil LCP Google','Mobile-First Indexing','Réduction CLS',
+  'Rôle balise main','Emplacement sitemap','font-display swap','Attribut alt image',
+  'Q17','Q18','Q19','Q20'
+];
+const ANSWER_LABELS_P4 = [
+  'Balise main','article vs section','Balise nav','figure + figcaption',
+  'Déclaration lang','strong vs em','dl/dt/dd','aria-label',
+  'Balise footer','JSON-LD script','Bouton action','Q12'
+];
+
+/* ── AUTH ── */
+async function login() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+
+  // Teste le token contre l'API (un appel listings vide)
+  try {
+    const r = await apiFetch('/api/submissions', 'GET', null, t);
+    if (r.ok) {
+      token = t;
+      sessionStorage.setItem('msc_admin_token', t);
+      showApp();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  } catch(e) {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('login-error').textContent = 'Erreur réseau : ' + e.message;
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('msc_admin_token');
+  token = '';
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('screen-app').style.display = 'none';
+  document.getElementById('token-input').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'flex';
+  document.getElementById('screen-app').style.flexDirection = 'column';
+  loadSubmissions();
+}
+
+/* ── API ── */
+async function apiFetch(path, method='GET', body=null, t=null) {
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${t || token}`
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(path, opts);
+}
+
+/* ── LOAD SUBMISSIONS ── */
+async function loadSubmissions() {
+  document.getElementById('submissions-tbody').innerHTML =
+    '<tr class="loading-row"><td colspan="12">Chargement…</td></tr>';
+  try {
+    const r = await apiFetch('/api/submissions');
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    allSubmissions = data.submissions || [];
+    renderTable();
+    renderStats();
+  } catch(e) {
+    document.getElementById('submissions-tbody').innerHTML =
+      `<tr class="loading-row"><td colspan="12" style="color:var(--danger)">Erreur : ${e.message}</td></tr>`;
+  }
+}
+
+/* ── RENDER STATS ── */
+function renderStats() {
+  const total = allSubmissions.length;
+  const graded = allSubmissions.filter(s => s.grading_status === 'graded').length;
+  const pending = allSubmissions.filter(s => s.grading_status === 'pending').length;
+  const scores = allSubmissions.filter(s => s.total_score != null).map(s => parseFloat(s.total_score));
+  const avg = scores.length ? (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1) : '—';
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-graded').textContent = graded;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-avg').textContent = avg;
+}
+
+/* ── TABLE RENDERING ── */
+function filterTable() {
+  renderTable();
+}
+
+function sortBy(field) {
+  if (sortField === field) sortAsc = !sortAsc;
+  else { sortField = field; sortAsc = true; }
+  renderTable();
+}
+
+function getFiltered() {
+  const q = (document.getElementById('search-input').value || '').toLowerCase();
+  const st = document.getElementById('filter-status').value;
+  return allSubmissions.filter(s => {
+    const name = `${s.first_name} ${s.last_name}`.toLowerCase();
+    if (q && !name.includes(q)) return false;
+    if (st !== 'all' && s.grading_status !== st) return false;
+    return true;
+  }).sort((a, b) => {
+    let va, vb;
+    if (sortField === 'name') { va = `${a.last_name}${a.first_name}`; vb = `${b.last_name}${b.first_name}`; }
+    else { va = a.created_at; vb = b.created_at; }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+}
+
+function fmtScore(v, max) {
+  if (v == null) return `<span class="score-dash">—</span>`;
+  return `<span class="score-manual">${parseFloat(v).toFixed(2)}</span>`;
+}
+function fmtAuto(v) {
+  if (v == null) return `<span class="score-dash">—</span>`;
+  return `<span class="score-auto">${parseFloat(v).toFixed(2)}</span>`;
+}
+function fmtTotal(v) {
+  if (v == null) return `<span class="score-dash">—</span>`;
+  const n = parseFloat(v);
+  const col = n >= 14 ? 'var(--success)' : n >= 10 ? 'var(--warning)' : 'var(--danger)';
+  return `<span style="font-family:var(--mono);font-weight:700;color:${col}">${n.toFixed(2)}</span>`;
+}
+
+function renderTable() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('submissions-tbody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><div class="empty-icon">📭</div><p>Aucune copie trouvée.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(s => {
+    const statusMap = { pending:'badge-pending', partial:'badge-partial', graded:'badge-graded' };
+    const statusLabel = { pending:'Non corrigée', partial:'Partielle', graded:'Corrigée' };
+    const badgeClass = statusMap[s.grading_status] || 'badge-pending';
+    const btnClass = s.grading_status === 'graded' ? 'done' : '';
+    const dur = s.duration_min != null ? `${Math.floor(s.duration_min/60)}h${String(s.duration_min%60).padStart(2,'0')}` : '—';
+    return `
+      <tr>
+        <td><strong>${escHtml(s.last_name)}</strong> ${escHtml(s.first_name)}</td>
+        <td style="font-size:12px;color:var(--text-muted)">${s.exam_date || '—'}<br><span style="font-size:11px">${s.submit_time_str || ''}</span></td>
+        <td style="font-size:12px;color:var(--text-muted)">${dur}</td>
+        <td class="score-cell">${fmtAuto(s.p1_score)}</td>
+        <td class="score-cell">${fmtAuto(s.p4_score)}</td>
+        <td class="score-cell">${fmtAuto(s.total_auto_score)}</td>
+        <td class="score-cell">${fmtScore(s.p2_score)}</td>
+        <td class="score-cell">${fmtScore(s.p3_score)}</td>
+        <td class="score-cell">${fmtScore(s.p5_score)}</td>
+        <td class="score-cell">${fmtTotal(s.total_score)}</td>
+        <td><span class="badge ${badgeClass}">${statusLabel[s.grading_status]||'—'}</span></td>
+        <td><button class="btn-grade ${btnClass}" onclick="openModal(${s.id})">
+          ${s.grading_status === 'graded' ? '✓ Voir' : 'Corriger'}
+        </button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+/* ── GRADING MODAL ── */
+async function openModal(id) {
+  currentId = id;
+  document.getElementById('grading-modal').classList.remove('hidden');
+  document.getElementById('modal-body').innerHTML = '<p style="padding:40px;text-align:center;color:var(--text-muted)">Chargement…</p>';
+  document.getElementById('modal-title').textContent = 'Copie #' + id;
+  document.getElementById('modal-meta').textContent = '—';
+
+  try {
+    const r = await apiFetch(`/api/submissions/${id}`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const { submission } = await r.json();
+    renderModal(submission);
+  } catch(e) {
+    document.getElementById('modal-body').innerHTML =
+      `<p style="padding:40px;text-align:center;color:var(--danger)">Erreur : ${e.message}</p>`;
+  }
+}
+
+function renderModal(s) {
+  document.getElementById('modal-title').textContent =
+    `${s.last_name} ${s.first_name}`;
+  document.getElementById('modal-meta').textContent =
+    `Examen du ${s.exam_date||'—'} · Remis à ${s.submit_time_str||'—'} · Durée : ${
+      s.duration_min != null ? Math.floor(s.duration_min/60)+'h'+String(s.duration_min%60).padStart(2,'0') : '—'
+    } · ID #${s.id}`;
+
+  const p1r = safeJson(s.p1_results, []);
+  const p4r = safeJson(s.p4_results, []);
+  const p2a = safeJson(s.p2_answers, {});
+  const p5a = safeJson(s.p5_answers, {});
+  const p3  = s.p3_answer || '';
+
+  // P1 MCQ rows
+  const p1Rows = p1r.map((r,i) => {
+    const ok = r.correct;
+    return `<tr>
+      <td>Q${r.q} — ${escHtml(ANSWER_LABELS_P1[i]||'')}</td>
+      <td class="${ok?'correct-ans':'wrong-ans'}">${r.ans.toUpperCase()}</td>
+      <td>${ok ? '✓' : '✗'}</td>
+    </tr>`;
+  }).join('');
+
+  // P4 MCQ rows
+  const p4Rows = p4r.map((r,i) => {
+    const ok = r.correct;
+    return `<tr>
+      <td>Q${r.q} — ${escHtml(ANSWER_LABELS_P4[i]||'')}</td>
+      <td class="${ok?'correct-ans':'wrong-ans'}">${r.ans.toUpperCase()}</td>
+      <td>${ok ? '✓' : '✗'}</td>
+    </tr>`;
+  }).join('');
+
+  // P2 error cards
+  const p2Cards = Array.from({length:12},(_,i) => {
+    const d = p2a[String(i+1)] || {};
+    return `<div class="answer-card">
+      <div class="card-num">Erreur ${i+1}</div>
+      <div class="field-row"><span class="field-label">Élément</span><span class="field-val">${d.element ? escHtml(d.element) : '<span class="empty-val">—</span>'}</span></div>
+      <div class="field-row"><span class="field-label">Problème</span><span class="field-val">${d.problem ? escHtml(d.problem) : '<span class="empty-val">—</span>'}</span></div>
+      <div class="field-row"><span class="field-label">Correction</span><span class="field-val">${d.fix ? escHtml(d.fix) : '<span class="empty-val">—</span>'}</span></div>
+    </div>`;
+  }).join('');
+
+  // P5 error cards
+  const p5Cards = Array.from({length:12},(_,i) => {
+    const d = p5a[String(i+1)] || {};
+    return `<div class="answer-card">
+      <div class="card-num">Erreur ${i+1}</div>
+      <div class="field-row"><span class="field-label">Élément</span><span class="field-val">${d.element ? escHtml(d.element) : '<span class="empty-val">—</span>'}</span></div>
+      <div class="field-row"><span class="field-label">Problème</span><span class="field-val">${d.problem ? escHtml(d.problem) : '<span class="empty-val">—</span>'}</span></div>
+      <div class="field-row"><span class="field-label">Correction</span><span class="field-val">${d.fix ? escHtml(d.fix) : '<span class="empty-val">—</span>'}</span></div>
+    </div>`;
+  }).join('');
+
+  const autoTotal = parseFloat(s.total_auto_score)||0;
+  const p2v = s.p2_score != null ? parseFloat(s.p2_score) : '';
+  const p3v = s.p3_score != null ? parseFloat(s.p3_score) : '';
+  const p5v = s.p5_score != null ? parseFloat(s.p5_score) : '';
+  const notes = s.grading_notes || '';
+
+  document.getElementById('modal-body').innerHTML = `
+    <!-- Auto scores -->
+    <div class="auto-scores">
+      <div class="auto-score-card">
+        <div class="label">P1 — QCM SEO</div>
+        <div class="value">${parseFloat(s.p1_score||0).toFixed(2)}</div>
+        <div class="sub">/ 5 pts · ${s.p1_correct||0} / ${p1r.length||20} réponses</div>
+      </div>
+      <div class="auto-score-card">
+        <div class="label">P4 — Sémantique HTML</div>
+        <div class="value">${parseFloat(s.p4_score||0).toFixed(2)}</div>
+        <div class="sub">/ 3 pts · ${s.p4_correct||0} / ${p4r.length||12} réponses</div>
+      </div>
+      <div class="auto-score-card" style="border-left-color:var(--success)">
+        <div class="label" style="color:var(--success)">Score automatique</div>
+        <div class="value" style="color:var(--success)">${autoTotal.toFixed(2)}</div>
+        <div class="sub">/ 8 pts (P1 + P4)</div>
+      </div>
+    </div>
+
+    <!-- P1 Detail -->
+    <div class="modal-section">
+      <div class="modal-section-title">
+        Partie 1 — QCM SEO Technique
+        <span style="display:flex;align-items:center;gap:8px">
+          <span class="pts-badge">/ 5 pts · auto-corrigé</span>
+          <button class="collapse-btn" onclick="toggleCollapse('p1-detail')">Masquer ▲</button>
+        </span>
+      </div>
+      <div class="collapsible open" id="p1-detail">
+        <table class="mcq-mini-table">
+          <thead><tr><th>Question</th><th>Réponse</th><th>✓/✗</th></tr></thead>
+          <tbody>${p1Rows || '<tr><td colspan="3" style="color:var(--text-muted);padding:8px">Aucune réponse enregistrée</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="modal-section">
+      <div class="modal-section-title">
+        Partie 2 — Analyse de code HTML
+        <span class="pts-badge">/ 4 pts · correction manuelle</span>
+      </div>
+      <div class="answer-cards">${p2Cards}</div>
+    </div>
+
+    <!-- P3 -->
+    <div class="modal-section">
+      <div class="modal-section-title">
+        Partie 3 — Réécriture HTML
+        <span class="pts-badge">/ 4 pts · correction manuelle</span>
+      </div>
+      <div class="p3-answer">${p3 ? escHtml(p3) : '<span style="color:#64748b;font-style:italic">(non renseigné)</span>'}</div>
+    </div>
+
+    <!-- P5 -->
+    <div class="modal-section">
+      <div class="modal-section-title">
+        Partie 5 — sitemap.wml &amp; robot.txt
+        <span class="pts-badge">/ 4 pts · correction manuelle</span>
+      </div>
+      <div class="answer-cards">${p5Cards}</div>
+    </div>
+
+    <!-- P4 Detail -->
+    <div class="modal-section">
+      <div class="modal-section-title">
+        Partie 4 — QCM Sémantique HTML
+        <span style="display:flex;align-items:center;gap:8px">
+          <span class="pts-badge">/ 3 pts · auto-corrigé</span>
+          <button class="collapse-btn" onclick="toggleCollapse('p4-detail')">Afficher ▼</button>
+        </span>
+      </div>
+      <div class="collapsible closed" id="p4-detail">
+        <table class="mcq-mini-table">
+          <thead><tr><th>Question</th><th>Réponse</th><th>✓/✗</th></tr></thead>
+          <tbody>${p4Rows || '<tr><td colspan="3" style="color:var(--text-muted);padding:8px">Aucune réponse enregistrée</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Score inputs -->
+    <div class="score-inputs-row">
+      <h4>🖊️ Saisir les notes (parties manuelles)</h4>
+      <div class="score-input-group">
+        <label>Partie 2 — Analyse HTML</label>
+        <input type="number" id="input-p2" min="0" max="4" step="0.5"
+          value="${p2v}" placeholder="0 – 4" oninput="updateTotalPreview()">
+        <div class="max-pts">0 à 4 pts · par 0,5</div>
+      </div>
+      <div class="score-input-group">
+        <label>Partie 3 — Réécriture HTML</label>
+        <input type="number" id="input-p3" min="0" max="4" step="0.5"
+          value="${p3v}" placeholder="0 – 4" oninput="updateTotalPreview()">
+        <div class="max-pts">0 à 4 pts · par 0,5</div>
+      </div>
+      <div class="score-input-group">
+        <label>Partie 5 — Sitemap / Robots</label>
+        <input type="number" id="input-p5" min="0" max="4" step="0.5"
+          value="${p5v}" placeholder="0 – 4" oninput="updateTotalPreview()">
+        <div class="max-pts">0 à 4 pts · par 0,5</div>
+      </div>
+      <div class="notes-group">
+        <label>Notes du formateur (optionnel)</label>
+        <textarea id="input-notes" placeholder="Commentaires, observations, axes d'amélioration…">${escHtml(notes)}</textarea>
+      </div>
+    </div>
+
+    <!-- Total preview -->
+    <div class="total-preview">
+      <span class="label">Score total (provisoire)</span>
+      <span class="value" id="total-preview-val">${
+        s.total_score != null
+          ? parseFloat(s.total_score).toFixed(2) + ' / 20'
+          : '— / 20'
+      }</span>
+    </div>
+  `;
+
+  // Init preview
+  updateTotalPreview(autoTotal);
+}
+
+function updateTotalPreview(autoOverride) {
+  const auto = autoOverride != null ? autoOverride : getAutoFromModal();
+  const p2 = parseFloat(document.getElementById('input-p2')?.value) || 0;
+  const p3 = parseFloat(document.getElementById('input-p3')?.value) || 0;
+  const p5 = parseFloat(document.getElementById('input-p5')?.value) || 0;
+  const allFilled = document.getElementById('input-p2')?.value !== '' &&
+                    document.getElementById('input-p3')?.value !== '' &&
+                    document.getElementById('input-p5')?.value !== '';
+  const total = allFilled ? (auto + p2 + p3 + p5).toFixed(2) + ' / 20' : '— / 20';
+  const el = document.getElementById('total-preview-val');
+  if (el) el.textContent = total;
+}
+
+function getAutoFromModal() {
+  // Read from rendered auto score card
+  const cards = document.querySelectorAll('.auto-score-card');
+  let auto = 0;
+  cards.forEach(c => {
+    if (c.querySelector('.label')?.textContent.includes('automatique')) {
+      auto = parseFloat(c.querySelector('.value')?.textContent) || 0;
+    }
+  });
+  return auto;
+}
+
+async function saveGrades() {
+  if (!currentId) return;
+  const p2 = document.getElementById('input-p2')?.value;
+  const p3 = document.getElementById('input-p3')?.value;
+  const p5 = document.getElementById('input-p5')?.value;
+  const notes = document.getElementById('input-notes')?.value || '';
+
+  const payload = { grading_notes: notes };
+  if (p2 !== '') payload.p2_score = parseFloat(p2);
+  if (p3 !== '') payload.p3_score = parseFloat(p3);
+  if (p5 !== '') payload.p5_score = parseFloat(p5);
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.textContent = 'Enregistrement…';
+
+  try {
+    const r = await apiFetch(`/api/submissions/${currentId}`, 'PATCH', payload);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+
+    // Update local state
+    const idx = allSubmissions.findIndex(s => s.id === currentId);
+    if (idx >= 0) {
+      const upd = data.submission;
+      Object.assign(allSubmissions[idx], upd);
+      allSubmissions[idx].grading_status =
+        upd.p2_score != null && upd.p3_score != null && upd.p5_score != null
+          ? 'graded'
+          : (upd.p2_score != null || upd.p3_score != null || upd.p5_score != null ? 'partial' : 'pending');
+    }
+
+    renderTable();
+    renderStats();
+
+    const fb = document.getElementById('save-feedback');
+    fb.classList.add('visible');
+    setTimeout(() => fb.classList.remove('visible'), 2500);
+    showToast('✓ Notes enregistrées avec succès !');
+
+  } catch(e) {
+    showToast('Erreur : ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Enregistrer les notes';
+  }
+}
+
+function closeModal() {
+  document.getElementById('grading-modal').classList.add('hidden');
+  currentId = null;
+}
+
+function toggleCollapse(id) {
+  const el = document.getElementById(id);
+  const btn = el?.previousElementSibling?.querySelector('.collapse-btn');
+  if (!el) return;
+  if (el.classList.contains('open')) {
+    el.classList.remove('open'); el.classList.add('closed');
+    if (btn) btn.textContent = 'Afficher ▼';
+  } else {
+    el.classList.remove('closed'); el.classList.add('open');
+    if (btn) btn.textContent = 'Masquer ▲';
+  }
+}
+
+/* ── UTILS ── */
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function safeJson(val, fallback) {
+  if (!val) return fallback;
+  if (typeof val === 'object') return val;
+  try { return JSON.parse(val); } catch { return fallback; }
+}
+
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isError ? 'var(--danger)' : '#1e293b';
+  t.classList.add('visible');
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.classList.remove('visible'), 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('grading-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('screen-login').style.display !== 'none') {
+    login();
+  }
+});
+
+/* ── INIT ── */
+(function init() {
+  const saved = sessionStorage.getItem('msc_admin_token');
+  if (saved) {
+    token = saved;
+    showApp();
+  }
+})();
+</script>
+</body>
+</html>

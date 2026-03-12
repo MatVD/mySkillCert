@@ -5,6 +5,10 @@
     {
       "source": "/",
       "destination": "/myskillcert.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
     }
   ],
   "headers": [

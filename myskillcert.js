@@ -1298,6 +1298,18 @@ Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed
     SEM_CORRECT_LABELS,
   };
 
+  // ── Sauvegarde en base de données (tentative silencieuse) ──────────────
+  let dbId = null;
+  try {
+    const dbRes = await saveToDatabase(submissionData);
+    dbId = dbRes.id;
+    if (window._examResults) window._examResults.dbId = dbId;
+    console.log('[MySkillCert] Copie enregistrée en base, id =', dbId);
+  } catch (dbErr) {
+    console.warn('[MySkillCert] DB save failed (email fallback actif) :', dbErr.message);
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   try {
     await sendSubmissionEmail({
       name: `${state.firstName} ${state.lastName}`,
@@ -1383,6 +1395,21 @@ function onP5Change(num) {
   updateSubmitButton();
   renderSidebarNav();
 }
+
+// ── Sauvegarde en base de données via /api/submit ─────────────────────────
+async function saveToDatabase(submissionData) {
+  const response = await fetch('/api/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(submissionData),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${response.status}`);
+  }
+  return response.json();
+}
+// ──────────────────────────────────────────────────────────────────────────
 
 async function sendSubmissionEmail(payload) {
   const response = await fetch(SUBMIT_ENDPOINT, {
