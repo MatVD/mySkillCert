@@ -1,0 +1,13 @@
+{
+  "name": "myskillcert",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.2",
+    "terser": "^5.19.0",
+    "csso": "^5.0.0"
+  }
+}
