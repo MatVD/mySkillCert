@@ -5,8 +5,8 @@
    ============================================= */
 const EXAM_DURATION = 2 * 60 * 60 + 15 * 60; // 8100 seconds
 const LS_KEY = "myskillcert_session";
-const EMAIL_TO = "mathieuvd64@gmail.com";
-const SUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${EMAIL_TO}`;
+const FORM_SUBMIT_TOKEN = "f0a853afc038e811d2800040ab39e637";
+const SUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORM_SUBMIT_TOKEN}`;
 const SALT = "msc2025q";
 
 // SHA-256 hashes of correct answers (pre-computed, not readable in plain text)
