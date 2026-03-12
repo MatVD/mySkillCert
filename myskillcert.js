@@ -3,13 +3,14 @@
 /* =============================================
    CONSTANTS
    ============================================= */
-const EXAM_DURATION = 2 * 60 * 60 + 15 * 60; // 8100 seconds
+const EXAM_DURATION = 2 * 60 * 60 + 30 * 60; // 9000 seconds — 4 parties
 const LS_KEY = "myskillcert_session";
 const FORM_SUBMIT_TOKEN = "f0a853afc038e811d2800040ab39e637";
 const SUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORM_SUBMIT_TOKEN}`;
 const SALT = "msc2025q";
+const SEM_SALT = "mschtml25";
 
-// SHA-256 hashes of correct answers (pre-computed, not readable in plain text)
+// SHA-256 hashes — Partie 1 QCM SEO (20 questions)
 const ANSWER_HASHES = [
   "c5c3138db429086561d542dc6cda0b9d16bff46dbc56fe79c1b0162dee8b5315", // Q1: b
   "75f6ec17d2b2db0eb23d1b1b0c0907f4e88574f30bb18a15e3fe1ad74dfc8e75", // Q2: a
@@ -27,6 +28,26 @@ const ANSWER_HASHES = [
   "f158354d78567e81c6323e25555428799ba4144723edb57b8a07a3b5f389984e", // Q14: b
   "68c32b2fe25b0550e1b893252515ca7d18839cbc97d21145f261fdc3bf90dc8a", // Q15: b
   "5c3524ae0d84d83641d28337b4af8b6d49ff27b37f1dc11f3e6c04a1c51cf4a1", // Q16: b
+  "661ab690821c72362de3ddad0d88a3377042430657aa1f619de73f5f7deaf13e", // Q17: a
+  "edc23b375ef74bb065f1cc43a4d6612b396ab1a1fff479079cddde6076d0b516", // Q18: b
+  "dd37859af2cfea6318b1565f7d0f53b73929a04eba83b7452a83314a71b90155", // Q19: c
+  "51e62e05c9d8f92ba3831a82731f665ff44d0474aa7aba0e816d2cb7bfa9d0b4", // Q20: c
+];
+
+// SHA-256 hashes — Partie 4 QCM Sémantique HTML (12 questions)
+const SEM_ANSWER_HASHES = [
+  "f404f26c418c2c55ecb6fcdd8886c3dcd28822c06ee834e32c14ae756f91a8a2", // Q1: c
+  "f21afec918ee250523934060bbcd644ff9899789ecd828663a2c42ac18489549", // Q2: b
+  "4f9bdade75eaa2f984ae264d55a50aab9ca3e5fd1d98af3fdbf2f18cc7455ff5", // Q3: c
+  "87f8c799c280bc4535151df9739b13eb2fadc94dd802985db6b037868ada5f62", // Q4: c
+  "5148fe769f079aaf487ce7d9f2db5cf69bc8b6c73cf10c0fc4f8b1c65a3d9266", // Q5: b
+  "b2a80089d0f7d209df95ce7b54cfedbebe2d9a107e74985e7f47565329a68095", // Q6: d
+  "58baf6ccfbc81b5395d0a450261ed1d118b81f9aa0c91e9a0894ed87d982871f", // Q7: c
+  "17bdb461603ea8b09944c838c506e93427dadf99bb9e88751c185373e50aaa52", // Q8: b
+  "36d492068e1a6dd38e6311032e52a4ad5fcda4ebf6ebd8d5a33074993901da09", // Q9: b
+  "98de68c0926c48594f63c3b2391d1ac11fe228e73ef8599cdee7ab6b89baf801", // Q10: c
+  "199f7eb2e522d1b1ad335af54aebbdc08596465d7cb40db0156859a6d2d76709", // Q11: c
+  "ad558db6fcd091546a29f79c12b010ae5206b823657ebe48560158e30c2fb5db", // Q12: d
 ];
 
 /* =============================================
@@ -201,6 +222,190 @@ const MCQ_QUESTIONS = [
       { k: "d", txt: "Rien, l'alt est optionnel" },
     ],
   },
+  // Q17-Q20 — Questions supplémentaires
+  {
+    q: "Que mesure le CLS (Cumulative Layout Shift) dans les Core Web Vitals ?",
+    opts: [
+      {
+        k: "a",
+        txt: "Les décalages visuels inattendus des éléments pendant le chargement",
+      },
+      { k: "b", txt: "Le temps de premier octet (TTFB)" },
+      { k: "c", txt: "Le nombre total d'éléments décalés" },
+      { k: "d", txt: "La vitesse de chargement des scripts" },
+    ],
+  },
+  {
+    q: "Quel attribut de lien empêche le transfert de « jus SEO » vers un site externe ?",
+    opts: [
+      { k: "a", txt: '<code>rel="noindex"</code>' },
+      { k: "b", txt: '<code>rel="nofollow"</code>' },
+      { k: "c", txt: '<code>rel="external"</code>' },
+      { k: "d", txt: '<code>rel="noreferrer"</code>' },
+    ],
+  },
+  {
+    q: "Quel protocole de métadonnées permet de contrôler l'aperçu d'une URL partagée sur les réseaux sociaux ?",
+    opts: [
+      { k: "a", txt: "Dublin Core" },
+      { k: "b", txt: "Schema.org" },
+      { k: "c", txt: "Open Graph (<code>og:</code>)" },
+      { k: "d", txt: "Twitter Cards" },
+    ],
+  },
+  {
+    q: "Quelle métrique Core Web Vitals remplace le FID (First Input Delay) depuis 2024 ?",
+    opts: [
+      { k: "a", txt: "TTI (Time To Interactive)" },
+      { k: "b", txt: "TBT (Total Blocking Time)" },
+      { k: "c", txt: "INP (Interaction to Next Paint)" },
+      { k: "d", txt: "TTFB (Time To First Byte)" },
+    ],
+  },
+];
+
+/* =============================================
+   PARTIE 4 — QCM SÉMAN TIQUE HTML
+   ============================================= */
+const SEM_QUESTIONS = [
+  {
+    q: "Quelle balise HTML représente sémantiquement le contenu principal <em>unique</em> d'une page ?",
+    opts: [
+      { k: "a", txt: '<code>&lt;div id="main"&gt;</code>' },
+      { k: "b", txt: '<code>&lt;section class="main"&gt;</code>' },
+      { k: "c", txt: "<code>&lt;main&gt;</code>" },
+      { k: "d", txt: "<code>&lt;content&gt;</code>" },
+    ],
+  },
+  {
+    q: "Quelle est la différence sémantique entre <code>&lt;article&gt;</code> et <code>&lt;section&gt;</code> ?",
+    opts: [
+      {
+        k: "a",
+        txt: "<code>&lt;article&gt;</code> est uniquement pour les articles de blog",
+      },
+      {
+        k: "b",
+        txt: "<code>&lt;article&gt;</code> est un contenu autonome redistribuable ; <code>&lt;section&gt;</code> est un regroupement thématique",
+      },
+      {
+        k: "c",
+        txt: "<code>&lt;section&gt;</code> est obsolète depuis HTML5.2",
+      },
+      { k: "d", txt: "Aucune différence, ils sont interchangeables" },
+    ],
+  },
+  {
+    q: "Quelle balise HTML est dédiée à la navigation principale d'un site ?",
+    opts: [
+      { k: "a", txt: '<code>&lt;div class="navbar"&gt;</code>' },
+      { k: "b", txt: '<code>&lt;ul class="nav"&gt;</code>' },
+      { k: "c", txt: "<code>&lt;nav&gt;</code>" },
+      { k: "d", txt: "<code>&lt;menu&gt;</code>" },
+    ],
+  },
+  {
+    q: "Quel élément HTML5 est sémantiquement correct pour encapsuler une image avec sa légende ?",
+    opts: [
+      {
+        k: "a",
+        txt: '<code>&lt;img&gt;</code> + <code>&lt;p class="caption"&gt;</code>',
+      },
+      {
+        k: "b",
+        txt: "<code>&lt;picture&gt;</code> + <code>&lt;caption&gt;</code>",
+      },
+      {
+        k: "c",
+        txt: "<code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code>",
+      },
+      { k: "d", txt: "<code>&lt;img&gt;</code> + <code>&lt;label&gt;</code>" },
+    ],
+  },
+  {
+    q: "Comment déclarer correctement la langue principale d'un document HTML ?",
+    opts: [
+      {
+        k: "a",
+        txt: '<code>&lt;meta http-equiv="Content-Language" content="fr"&gt;</code>',
+      },
+      { k: "b", txt: '<code>&lt;html lang="fr"&gt;</code>' },
+      { k: "c", txt: '<code>&lt;meta name="language" content="fr"&gt;</code>' },
+      { k: "d", txt: '<code>&lt;body lang="fr"&gt;</code>' },
+    ],
+  },
+  {
+    q: "Quelle balise met en valeur un texte avec une <em>importance forte</em> (sémantique, pas seulement visuelle) ?",
+    opts: [
+      { k: "a", txt: "<code>&lt;b&gt;</code>" },
+      { k: "b", txt: "<code>&lt;i&gt;</code>" },
+      { k: "c", txt: "<code>&lt;em&gt;</code>" },
+      { k: "d", txt: "<code>&lt;strong&gt;</code>" },
+    ],
+  },
+  {
+    q: "Quelle combinaison de balises est sémantiquement correcte pour une liste de termes et leurs définitions ?",
+    opts: [
+      { k: "a", txt: "<code>&lt;ul&gt;</code> + <code>&lt;li&gt;</code>" },
+      { k: "b", txt: "<code>&lt;ol&gt;</code> + <code>&lt;li&gt;</code>" },
+      {
+        k: "c",
+        txt: "<code>&lt;dl&gt;</code>, <code>&lt;dt&gt;</code>, <code>&lt;dd&gt;</code>",
+      },
+      { k: "d", txt: "<code>&lt;table&gt;</code> + <code>&lt;tr&gt;</code>" },
+    ],
+  },
+  {
+    q: "Quel attribut ARIA permet de donner un nom accessible à un élément sans texte visible ?",
+    opts: [
+      { k: "a", txt: "<code>role</code>" },
+      { k: "b", txt: "<code>aria-label</code>" },
+      { k: "c", txt: "<code>aria-hidden</code>" },
+      { k: "d", txt: "<code>aria-live</code>" },
+    ],
+  },
+  {
+    q: "Quelle balise HTML5 représente sémantiquement le pied de page d'un document ou d'une section ?",
+    opts: [
+      { k: "a", txt: '<code>&lt;div id="footer"&gt;</code>' },
+      { k: "b", txt: "<code>&lt;footer&gt;</code>" },
+      { k: "c", txt: "<code>&lt;bottom&gt;</code>" },
+      { k: "d", txt: '<code>&lt;section class="footer"&gt;</code>' },
+    ],
+  },
+  {
+    q: "Quelle balise permet d'intégrer des données structurées JSON-LD (Schema.org) dans une page ?",
+    opts: [
+      { k: "a", txt: '<code>&lt;meta type="application/ld+json"&gt;</code>' },
+      { k: "b", txt: '<code>&lt;link rel="schema"&gt;</code>' },
+      { k: "c", txt: '<code>&lt;script type="application/ld+json"&gt;</code>' },
+      { k: "d", txt: '<code>&lt;data schema="json-ld"&gt;</code>' },
+    ],
+  },
+  {
+    q: "Quelle est la sémantique correcte pour un bouton déclenchant une action JavaScript (sans navigation) ?",
+    opts: [
+      { k: "a", txt: '<code>&lt;a href="javascript:void(0)"&gt;</code>' },
+      {
+        k: "b",
+        txt: '<code>&lt;div onclick="action()" class="btn"&gt;</code>',
+      },
+      { k: "c", txt: '<code>&lt;button type="button"&gt;</code>' },
+      {
+        k: "d",
+        txt: '<code>&lt;span class="btn" onclick="action()"&gt;</code>',
+      },
+    ],
+  },
+  {
+    q: "Dans quelle balise HTML doit-on placer le titre visible dans l'onglet du navigateur ?",
+    opts: [
+      { k: "a", txt: "<code>&lt;h1&gt;</code>" },
+      { k: "b", txt: "<code>&lt;header&gt;</code>" },
+      { k: "c", txt: '<code>&lt;meta name="title"&gt;</code>' },
+      { k: "d", txt: "<code>&lt;title&gt;</code>" },
+    ],
+  },
 ];
 
 /* =============================================
@@ -290,6 +495,7 @@ let state = {
   mcqAnswers: {}, // { "1": "a", "2": "b", ... }
   p2Answers: {}, // { "1": { element: "", problem: "", fix: "" }, ... }
   p3Answer: "",
+  semAnswers: {}, // Partie 4 sémantique { "1": "c", ... }
 };
 
 let timerInterval = null;
@@ -311,10 +517,22 @@ async function checkAnswer(qIndex, answer) {
   return hash === ANSWER_HASHES[qIndex];
 }
 
-// Derive the correct answer letter for a question by testing all options against its hash
 async function deriveCorrectAnswer(qIndex) {
   for (const opt of ["a", "b", "c", "d"]) {
     if (await checkAnswer(qIndex, opt)) return opt;
+  }
+  return "?";
+}
+
+async function checkSemAnswer(qIndex, answer) {
+  const key = SEM_SALT + (qIndex + 1) + answer;
+  const hash = await sha256(key);
+  return hash === SEM_ANSWER_HASHES[qIndex];
+}
+
+async function deriveSemCorrectAnswer(qIndex) {
+  for (const opt of ["a", "b", "c", "d"]) {
+    if (await checkSemAnswer(qIndex, opt)) return opt;
   }
   return "?";
 }
@@ -393,6 +611,7 @@ function startExam() {
   state.mcqAnswers = {};
   state.p2Answers = {};
   state.p3Answer = "";
+  state.semAnswers = {};
   state.currentPart = 1;
   saveState();
   launchExam();
@@ -409,6 +628,7 @@ function launchExam() {
   buildMCQ();
   buildP2();
   buildP3();
+  buildP4();
   restoreAnswers();
   renderSidebarNav();
   updateProgress();
@@ -435,7 +655,7 @@ function buildMCQ() {
     card.className = "question-card";
     card.id = `qcard-${i + 1}`;
     card.innerHTML = `
-      <div class="question-number">Question ${i + 1} / 16 <span style="color:var(--accent);font-size:10px;margin-left:8px;">· 0,5 pt</span></div>
+      <div class="question-number">Question ${i + 1} / ${MCQ_QUESTIONS.length} <span style="color:var(--accent);font-size:10px;margin-left:8px;">· 0,5 pt</span></div>
       <div class="question-text">${q.q}</div>
       <div class="options">
         ${q.opts
@@ -538,6 +758,47 @@ function onP3Change() {
   renderSidebarNav();
 }
 
+/* =============================================
+   BUILD PART 4 — SÉMANTIQUE HTML
+   ============================================= */
+function buildP4() {
+  const container = document.getElementById("sem-questions");
+  if (!container) return;
+  container.innerHTML = "";
+  SEM_QUESTIONS.forEach((q, i) => {
+    const card = document.createElement("div");
+    card.className = "question-card";
+    card.id = `semcard-${i + 1}`;
+    card.innerHTML = `
+      <div class="question-number">Question ${i + 1} / ${SEM_QUESTIONS.length} <span style="color:var(--accent-sem);font-size:10px;margin-left:8px;">· 0,5 pt</span></div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">
+        ${q.opts
+          .map(
+            (o) => `
+          <label class="option-label">
+            <input type="radio" name="sem${i + 1}" value="${o.k}" onchange="onSemChange(${i + 1}, '${o.k}')">
+            <span>${o.txt}</span>
+          </label>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function onSemChange(qNum, val) {
+  state.semAnswers[String(qNum)] = val;
+  const card = document.getElementById(`semcard-${qNum}`);
+  if (card) card.classList.add("answered");
+  saveState();
+  updateProgress();
+  updateSubmitButton();
+  renderSidebarNav();
+}
+
 function copyP3() {
   const val = document.getElementById("textarea-p3").value;
   if (!val.trim()) {
@@ -592,6 +853,16 @@ function restoreAnswers() {
     document.getElementById("textarea-p3").value = state.p3Answer;
   }
 
+  // Part 4 — Sémantique
+  Object.entries(state.semAnswers || {}).forEach(([q, v]) => {
+    const radio = document.querySelector(`input[name="sem${q}"][value="${v}"]`);
+    if (radio) {
+      radio.checked = true;
+      const card = document.getElementById(`semcard-${q}`);
+      if (card) card.classList.add("answered");
+    }
+  });
+
   // Apply highlight.js
   requestAnimationFrame(() => {
     document
@@ -609,9 +880,9 @@ function renderSidebarNav() {
     {
       num: 1,
       name: "QCM SEO",
-      pts: "8 pts",
+      pts: "10 pts",
       answered: countP1(),
-      total: 16,
+      total: MCQ_QUESTIONS.length,
     },
     {
       num: 2,
@@ -626,6 +897,13 @@ function renderSidebarNav() {
       pts: "6 pts",
       answered: countP3(),
       total: 1,
+    },
+    {
+      num: 4,
+      name: "Sémantique HTML",
+      pts: "6 pts",
+      answered: countP4(),
+      total: SEM_QUESTIONS.length,
     },
   ];
 
@@ -664,12 +942,16 @@ function countP3() {
   return (state.p3Answer || "").trim() ? 1 : 0;
 }
 
+function countP4() {
+  return Object.keys(state.semAnswers || {}).length;
+}
+
 /* =============================================
    PROGRESS BAR
    ============================================= */
 function updateProgress() {
-  const total = 16 + 12 + 1; // 29 total items
-  const done = countP1() + countP2() + countP3();
+  const total = MCQ_QUESTIONS.length + 12 + 1 + SEM_QUESTIONS.length;
+  const done = countP1() + countP2() + countP3() + countP4();
   const pct = Math.round((done / total) * 100);
   document.getElementById("progress-bar").style.width = pct + "%";
 }
@@ -681,8 +963,9 @@ function updateSubmitButton() {
   const p1ok = countP1() >= 1;
   const p2ok = countP2() >= 1;
   const p3ok = countP3() >= 1;
+  const p4ok = countP4() >= 1;
   const btn = document.getElementById("btn-submit");
-  if (btn) btn.disabled = !(p1ok && p2ok && p3ok) || isSubmitting;
+  if (btn) btn.disabled = !(p1ok && p2ok && p3ok && p4ok) || isSubmitting;
 }
 
 function setSubmittingState(nextState) {
@@ -705,7 +988,7 @@ function goToPart(num) {
     .forEach((s) => s.classList.remove("active"));
   document.getElementById(`part-${num}`).classList.add("active");
   document.getElementById("topbar-part-display").textContent =
-    `Partie ${num} / 3`;
+    `Partie ${num} / 4`;
   renderSidebarNav();
   closeSidebar();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -792,7 +1075,7 @@ async function submitExam() {
   const startFmt = fmt(startDate);
   const nowFmt = fmt(now);
 
-  // Score calculation + derive correct answers dynamically from hashes (never stored in plain text)
+  // Score P1 (SEO)
   let correctCount = 0;
   const mcqResults = [];
   const CORRECT_LABELS = [];
@@ -804,6 +1087,19 @@ async function submitExam() {
     CORRECT_LABELS.push(isCorrect ? ans : await deriveCorrectAnswer(i));
   }
   const mcqScore = (correctCount * 0.5).toFixed(1);
+
+  // Score P4 (Sémantique HTML)
+  let semCorrectCount = 0;
+  const semResults = [];
+  const SEM_CORRECT_LABELS = [];
+  for (let i = 0; i < SEM_QUESTIONS.length; i++) {
+    const ans = (state.semAnswers || {})[String(i + 1)];
+    const isCorrect = ans ? await checkSemAnswer(i, ans) : false;
+    if (isCorrect) semCorrectCount++;
+    semResults.push({ q: i + 1, ans: ans || "—", correct: isCorrect });
+    SEM_CORRECT_LABELS.push(isCorrect ? ans : await deriveSemCorrectAnswer(i));
+  }
+  const semScore = (semCorrectCount * 0.5).toFixed(1);
 
   // Build email body
   let body = `========================================
@@ -817,9 +1113,9 @@ Heure remise  : ${nowFmt.time}
 Durée utilisée: ${elapsedH}h ${String(elapsedM).padStart(2, "0")}min
 
 ========================================
-PARTIE 1 — QCM (score automatique)
+PARTIE 1 — QCM SEO (score automatique)
 ========================================
-Score : ${mcqScore} / 8 pts (${correctCount} bonnes réponses sur 16)
+Score : ${mcqScore} / 10 pts (${correctCount} bonnes réponses sur ${MCQ_QUESTIONS.length})
 
 `;
 
@@ -854,9 +1150,26 @@ PARTIE 3 — CORRECTION TECHNIQUE
 ${state.p3Answer || "(non renseigné)"}
 
 ========================================
-Score MCQ automatique : ${mcqScore} / 8 pts
-Parties 2 & 3 : à corriger manuellement
-Score total provisoire : ${mcqScore} / 20 pts
+PARTIE 4 — QCM SÉMANTIQUE HTML (score automatique)
+========================================
+Score : ${semScore} / 6 pts (${semCorrectCount} bonnes réponses sur ${SEM_QUESTIONS.length})
+
+`;
+
+  semResults.forEach((r) => {
+    const status = r.correct
+      ? "✓ Correct"
+      : `✗ Incorrect (bonne réponse : ${SEM_CORRECT_LABELS[r.q - 1].toUpperCase()})`;
+    body += `Q${String(r.q).padStart(2, "0")} : ${r.ans.toUpperCase()} — ${status}\n`;
+  });
+
+  body += `
+========================================
+Score automatique P1 : ${mcqScore} / 10 pts
+Score automatique P4 : ${semScore} / 6 pts
+Parties 2 & 3 : à corriger manuellement (12 pts)
+Score MCQ total automatique : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed(1)} / 16 pts
+Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed(1)} / 28 pts
 ========================================`;
 
   const submissionData = {
@@ -883,7 +1196,13 @@ Score total provisoire : ${mcqScore} / 20 pts
       maxScore: 6,
       answer: state.p3Answer,
     },
-    totalAutoScore: parseFloat(mcqScore),
+    part4: {
+      score: parseFloat(semScore),
+      maxScore: 6,
+      answers: state.semAnswers,
+      results: semResults,
+    },
+    totalAutoScore: parseFloat(mcqScore) + parseFloat(semScore),
     timestamp: now.toISOString(),
   };
 
@@ -892,9 +1211,13 @@ Score total provisoire : ${mcqScore} / 20 pts
     mcqResults,
     mcqScore,
     correctCount,
+    semResults,
+    semScore,
+    semCorrectCount,
     now,
     nowFmt,
     CORRECT_LABELS,
+    SEM_CORRECT_LABELS,
   };
 
   try {
@@ -957,9 +1280,23 @@ function showResultsScreen() {
     return;
   }
 
-  const { mcqResults, mcqScore, correctCount, now, nowFmt, CORRECT_LABELS } = r;
+  const {
+    mcqResults,
+    mcqScore,
+    correctCount,
+    semResults,
+    semScore,
+    semCorrectCount,
+    now,
+    nowFmt,
+    CORRECT_LABELS,
+    SEM_CORRECT_LABELS,
+  } = r;
 
-  document.getElementById("results-score-num").textContent = mcqScore;
+  const totalAutoScore = (parseFloat(mcqScore) + parseFloat(semScore)).toFixed(
+    1,
+  );
+  document.getElementById("results-score-num").textContent = totalAutoScore;
   document.getElementById("results-meta").textContent =
     `Soumis par ${state.firstName} ${state.lastName} le ${nowFmt.date || ""} à ${nowFmt.time}`;
 
@@ -980,6 +1317,25 @@ function showResultsScreen() {
     "Emplacement sitemap.xml",
     "font-display swap",
     "Attribut alt d'image",
+    "Définition CLS",
+    "Attribut rel nofollow",
+    "Open Graph / partage social",
+    "Métrique INP / Core Web Vitals",
+  ];
+
+  const SEM_LABELS = [
+    "Balise <main>",
+    "<article> vs <section>",
+    "Balise <nav>",
+    "<figure> + <figcaption>",
+    "Attribut lang",
+    "<strong> vs <b>",
+    "Listes de définitions <dl>",
+    "ARIA aria-label",
+    "Balise <footer>",
+    "JSON-LD / Schema.org",
+    "Bouton sémantique",
+    "Balise <title>",
   ];
 
   const tbody = document.getElementById("mcq-results-body");
@@ -999,6 +1355,28 @@ function showResultsScreen() {
   `,
     )
     .join("");
+
+  // Part 4 results table
+  const semTbody = document.getElementById("sem-results-body");
+  if (semTbody && semResults) {
+    semTbody.innerHTML = semResults
+      .map(
+        (r) => `
+    <tr>
+      <td><strong>Q${r.q}</strong> <span style="color:var(--text-muted);font-size:12px;">— ${SEM_LABELS[r.q - 1]}</span></td>
+      <td><span style="font-family:var(--font-mono);font-weight:600;">${r.ans.toUpperCase()}</span></td>
+      <td>${r.correct ? '<span class="badge-correct">✓ Correct</span>' : '<span class="badge-wrong">✗ Incorrect</span>'}</td>
+      <td>${!r.correct ? `<span class="badge-pending">${SEM_CORRECT_LABELS[r.q - 1].toUpperCase()}</span>` : '<span style="color:var(--text-muted);">—</span>'}</td>
+    </tr>
+  `,
+      )
+      .join("");
+  }
+
+  // Update results score display
+  const scoreLabel = document.getElementById("results-score-label");
+  if (scoreLabel)
+    scoreLabel.textContent = `Score automatique (P1 + P4) : ${totalAutoScore} / 16 pts`;
 
   showScreen("screen-results");
 }

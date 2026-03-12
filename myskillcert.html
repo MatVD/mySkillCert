@@ -48,20 +48,20 @@
           <div class="recap-grid">
             <div class="recap-item">
               <span class="recap-label">Parties</span>
-              <span class="recap-value">3 parties</span>
+              <span class="recap-value">4 parties</span>
             </div>
             <div class="recap-item">
               <span class="recap-label">Durée</span>
-              <span class="recap-value">2h 15min</span>
+              <span class="recap-value">2h 30min</span>
             </div>
             <div class="recap-item">
               <span class="recap-label">Note</span>
-              <span class="recap-value">/ 20 points</span>
+              <span class="recap-value">/ 28 points</span>
             </div>
             <div class="recap-item">
               <span class="recap-label">Questions</span>
               <span class="recap-value"
-                >P1:16 QCM · P2:12 erreurs · P3:1 réécriture</span
+                >P1:20 QCM · P2:12 erreurs · P3:1 réécriture · P4:12 QCM</span
               >
             </div>
           </div>
@@ -250,6 +250,29 @@
               <button class="btn-prev" onclick="goToPart(2)">
                 ← Partie précédente
               </button>
+              <button class="btn-next" onclick="goToPart(4)">
+                Partie suivante →
+              </button>
+            </div>
+          </div>
+
+          <!-- PART 4 -->
+          <div class="part-section" id="part-4">
+            <div class="part-header">
+              <span class="part-tag part-tag-sem">Partie 4</span>
+              <h2>QCM — Balises HTML &amp; Sémantique Web</h2>
+              <p>
+                12 questions · 0,5 pt chacune · Total : 6 pts — Correction
+                automatique
+              </p>
+            </div>
+
+            <div id="sem-questions"></div>
+
+            <div class="nav-buttons">
+              <button class="btn-prev" onclick="goToPart(3)">
+                ← Partie précédente
+              </button>
               <button
                 class="btn-submit"
                 id="btn-submit"
@@ -276,14 +299,14 @@
 
       <div class="results-body">
         <div class="results-score-big">
-          <div class="score-total">Score Partie 1 (QCM)</div>
+          <div class="score-total">Score automatique (P1 + P4)</div>
           <div class="score-number" id="results-score-num">0</div>
-          <div class="score-label">/ 8 pts</div>
+          <div class="score-label" id="results-score-label">/ 16 pts</div>
         </div>
 
         <div class="results-section">
           <h3>
-            Partie 1 — QCM Détaillé
+            Partie 1 — QCM SEO Technique
             <span class="tag">Correction automatique</span>
           </h3>
           <table class="mcq-results-table" id="mcq-results-table">
@@ -313,8 +336,26 @@
           </p>
         </div>
 
+        <div class="results-section">
+          <h3>
+            Partie 4 — QCM Balises HTML &amp; Sémantique
+            <span class="tag">Correction automatique</span>
+          </h3>
+          <table class="mcq-results-table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Votre réponse</th>
+                <th>Résultat</th>
+                <th>Bonne réponse</th>
+              </tr>
+            </thead>
+            <tbody id="sem-results-body"></tbody>
+          </table>
+        </div>
+
         <div class="results-final-msg">
-          🎓 Votre score final sur 20 pts vous sera communiqué par votre
+          🎓 Votre score final sur 28 pts vous sera communiqué par votre
           formateur après correction des parties 2 et 3.
         </div>
 
