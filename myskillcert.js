@@ -5,8 +5,8 @@
    ============================================= */
 const EXAM_DURATION = 2 * 60 * 60 + 30 * 60; // 9000 seconds — 5 parties
 const LS_KEY = "myskillcert_session";
-const FORM_SUBMIT_TOKEN = "f0a853afc038e811d2800040ab39e637";
-const SUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORM_SUBMIT_TOKEN}`;
+const FORM_SUBMIT_EMAIL = "mathieuvd64@gmail.com";
+const SUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORM_SUBMIT_EMAIL}`;
 const SALT = "msc2025q";
 const SEM_SALT = "mschtml25";
 
@@ -1322,8 +1322,9 @@ Score total provisoire : ${(parseFloat(mcqScore) + parseFloat(semScore)).toFixed
     showResultsScreen();
   } catch (error) {
     console.error("Erreur lors de l'envoi du devoir", error);
+    const reason = error && error.message ? `\n\nDétail: ${error.message}` : "";
     alert(
-      "L'envoi du devoir a échoue. Verifiez la connexion ou confirmez l'adresse de reception sur FormSubmit, puis recommencez.",
+      `L'envoi du devoir a échoue. Verifiez la connexion ou la configuration FormSubmit, puis recommencez.${reason}`,
     );
   } finally {
     setSubmittingState(false);
@@ -1394,7 +1395,10 @@ async function sendSubmissionEmail(payload) {
   });
 
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) {
+  const submissionSucceeded =
+    result && (result.success === true || result.success === "true");
+
+  if (!response.ok || !submissionSucceeded) {
     throw new Error(result.message || `HTTP ${response.status}`);
   }
 
