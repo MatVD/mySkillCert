@@ -2,6 +2,11 @@ const esbuild = require("esbuild");
 const terser = require("terser");
 const fs = require("fs");
 const csso = require("csso");
+const crypto = require("crypto");
+
+function fileHash(content) {
+  return crypto.createHash("sha256").update(content).digest("hex").slice(0, 8);
+}
 
 (async () => {
   try {
@@ -20,7 +25,20 @@ const csso = require("csso");
     fs.writeFileSync("myskillcert.min.css", minCss, "utf8");
     console.log("Generated myskillcert.min.css");
 
-    // no bundle file to clean
+    // Inject content-based version hashes into HTML
+    const jsHash = fileHash(minified.code);
+    const cssHash = fileHash(minCss);
+    let html = fs.readFileSync("myskillcert.html", "utf8");
+    html = html.replace(
+      /myskillcert\.min\.js\?v=[^"']+/,
+      `myskillcert.min.js?v=${jsHash}`,
+    );
+    html = html.replace(
+      /myskillcert\.min\.css\?v=[^"']+/,
+      `myskillcert.min.css?v=${cssHash}`,
+    );
+    fs.writeFileSync("myskillcert.html", html, "utf8");
+    console.log(`Cache-bust hashes injected — JS: ${jsHash}, CSS: ${cssHash}`);
 
     console.log("Build complete.");
     process.exit(0);
