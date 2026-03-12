@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MySkillCert — SEO Technique pour Développeurs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="myskillcert.css" />
+  </head>
+  <body>
+    <!-- =============================================
+     WELCOME SCREEN
+     ============================================= -->
+    <div id="screen-welcome" class="screen active">
+      <div class="welcome-card">
+        <div class="welcome-logo">
+          <div class="logo-icon">SC</div>
+          <h1>MySkillCert</h1>
+        </div>
+        <p class="welcome-subtitle">
+          Évaluation SEO Technique pour Développeurs
+        </p>
+
+        <div id="resume-banner" class="resume-banner" style="display: none">
+          <p id="resume-text">Reprendre l'examen ?</p>
+          <div class="resume-actions">
+            <button class="btn-resume" onclick="resumeSession()">
+              ▶ Reprendre
+            </button>
+            <button class="btn-secondary" onclick="newSession()">
+              Nouvelle session
+            </button>
+          </div>
+        </div>
+
+        <div class="exam-recap">
+          <h3>Récapitulatif de l'examen</h3>
+          <div class="recap-grid">
+            <div class="recap-item">
+              <span class="recap-label">Parties</span>
+              <span class="recap-value">3 parties</span>
+            </div>
+            <div class="recap-item">
+              <span class="recap-label">Durée</span>
+              <span class="recap-value">2h 15min</span>
+            </div>
+            <div class="recap-item">
+              <span class="recap-label">Note</span>
+              <span class="recap-value">/ 20 points</span>
+            </div>
+            <div class="recap-item">
+              <span class="recap-label">Questions</span>
+              <span class="recap-value"
+                >P1:16 QCM · P2:12 erreurs · P3:1 réécriture</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div id="new-session-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="input-firstname">Prénom</label>
+              <input
+                type="text"
+                id="input-firstname"
+                placeholder="Ex : Marie"
+                autocomplete="given-name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="input-lastname">Nom de famille</label>
+              <input
+                type="text"
+                id="input-lastname"
+                placeholder="Ex : Dupont"
+                autocomplete="family-name"
+              />
+            </div>
+          </div>
+          <button class="btn-primary" onclick="startExam()">
+            Commencer l'examen →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================================
+     EXAM SCREEN
+     ============================================= -->
+    <div id="screen-exam" class="screen">
+      <!-- Top bar -->
+      <div class="topbar">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <button
+            class="hamburger"
+            id="hamburger-btn"
+            onclick="toggleSidebar()"
+            aria-label="Menu"
+          >
+            <span></span><span></span><span></span>
+          </button>
+          <div class="topbar-name">
+            <span id="topbar-name-display">Élève</span>
+            <span class="badge-cert">SEO Tech</span>
+          </div>
+        </div>
+        <div class="timer-display" id="timer-display">2:15:00</div>
+        <div class="topbar-part" id="topbar-part-display">Partie 1 / 3</div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-bar-wrap">
+        <div
+          class="progress-bar-fill"
+          id="progress-bar"
+          style="width: 0%"
+        ></div>
+      </div>
+
+      <!-- Sidebar overlay -->
+      <div
+        class="sidebar-overlay"
+        id="sidebar-overlay"
+        onclick="closeSidebar()"
+      ></div>
+
+      <!-- Exam layout -->
+      <div class="exam-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+          <div class="sidebar-header">
+            <div class="sidebar-title">Navigation</div>
+          </div>
+          <div id="sidebar-nav"></div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="exam-content">
+          <!-- PART 1 -->
+          <div class="part-section active" id="part-1">
+            <div class="part-header">
+              <span class="part-tag">Partie 1</span>
+              <h2>QCM SEO Technique</h2>
+              <p>
+                16 questions à choix unique — 0,5 pt par bonne réponse — Total :
+                8 pts
+              </p>
+            </div>
+            <div id="mcq-questions"></div>
+            <div class="nav-buttons">
+              <span></span>
+              <button class="btn-next" onclick="goToPart(2)">
+                Partie suivante →
+              </button>
+            </div>
+          </div>
+
+          <!-- PART 2 -->
+          <div class="part-section" id="part-2">
+            <div class="part-header">
+              <span class="part-tag">Partie 2</span>
+              <h2>Analyse de Code HTML</h2>
+              <p>
+                Identifiez les 12 erreurs SEO dans le code ci-dessous — 0,5 pt
+                par erreur bien identifiée — Total : 6 pts
+              </p>
+            </div>
+
+            <!-- Code block -->
+            <div class="code-block-wrap">
+              <div class="code-block-header">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="filename">index.html — à analyser</span>
+              </div>
+              <pre><code class="language-html" id="p2-code-block"></code></pre>
+            </div>
+
+            <div
+              class="part-header"
+              style="margin-top: 28px; margin-bottom: 20px"
+            >
+              <p style="font-weight: 600; color: var(--text)">
+                Identifiez et décrivez chacune des 12 erreurs SEO présentes dans
+                ce code :
+              </p>
+            </div>
+
+            <div class="error-blocks" id="error-blocks"></div>
+
+            <div class="nav-buttons">
+              <button class="btn-prev" onclick="goToPart(1)">
+                ← Partie précédente
+              </button>
+              <button class="btn-next" onclick="goToPart(3)">
+                Partie suivante →
+              </button>
+            </div>
+          </div>
+
+          <!-- PART 3 -->
+          <div class="part-section" id="part-3">
+            <div class="part-header">
+              <span class="part-tag">Partie 3</span>
+              <h2>Correction Technique — Réécriture HTML</h2>
+              <p>
+                Réécrivez le code HTML ci-dessous en intégrant toutes les bonnes
+                pratiques SEO — Total : 6 pts
+              </p>
+            </div>
+
+            <!-- Original code -->
+            <div class="code-block-wrap">
+              <div class="code-block-header">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="filename">boutiquevelo.html — à optimiser</span>
+              </div>
+              <pre><code class="language-html" id="p3-code-block"></code></pre>
+            </div>
+
+            <!-- Rewrite textarea -->
+            <div class="rewrite-wrap">
+              <label for="textarea-p3">✏️ Votre version HTML optimisée :</label>
+              <textarea
+                id="textarea-p3"
+                placeholder='Réécrivez ici le code HTML optimisé en intégrant toutes les bonnes pratiques SEO...&#10;&#10;Ex : balise <html lang>, <meta name="description">, balise <nav>, <h1> unique, attributs alt descriptifs, defer sur scripts, etc.'
+              ></textarea>
+              <div class="rewrite-actions">
+                <button class="btn-copy" onclick="copyP3()">
+                  📋 Copier mon code
+                </button>
+              </div>
+            </div>
+
+            <div class="nav-buttons">
+              <button class="btn-prev" onclick="goToPart(2)">
+                ← Partie précédente
+              </button>
+              <button
+                class="btn-submit"
+                id="btn-submit"
+                onclick="submitExam()"
+                disabled
+              >
+                ✓ Soumettre mon devoir
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- =============================================
+     SUBMISSION MODAL
+     ============================================= -->
+    <div class="modal-overlay hidden" id="submit-modal">
+      <div class="modal-box">
+        <div class="modal-icon success">📧</div>
+        <h3>Devoir prêt à envoyer !</h3>
+        <p>
+          Votre client de messagerie devrait s'être ouvert avec votre devoir
+          complet pré-rempli. Vérifiez le contenu puis cliquez
+          <strong>Envoyer</strong>.
+        </p>
+        <div class="modal-note">
+          ⚠️ Si aucun client mail ne s'est ouvert, utilisez le bouton ci-dessous
+          pour copier votre devoir et l'envoyer manuellement à
+          <strong>mathieuvd64@gmail.com</strong>
+        </div>
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-primary" onclick="confirmSent()">
+            ✅ J'ai bien envoyé l'email
+          </button>
+          <button
+            class="modal-btn modal-btn-secondary"
+            onclick="copyFullSubmission()"
+          >
+            📋 Copier le devoir complet
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================================
+     RESULTS SCREEN
+     ============================================= -->
+    <div id="screen-results" class="screen">
+      <div class="results-header">
+        <div class="results-check">✅</div>
+        <h1>Devoir soumis avec succès !</h1>
+        <p id="results-meta">Soumis le — à —</p>
+      </div>
+
+      <div class="results-body">
+        <div class="results-score-big">
+          <div class="score-total">Score Partie 1 (QCM)</div>
+          <div class="score-number" id="results-score-num">0</div>
+          <div class="score-label">/ 8 pts</div>
+        </div>
+
+        <div class="results-section">
+          <h3>
+            Partie 1 — QCM Détaillé
+            <span class="tag">Correction automatique</span>
+          </h3>
+          <table class="mcq-results-table" id="mcq-results-table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Votre réponse</th>
+                <th>Résultat</th>
+                <th>Bonne réponse</th>
+              </tr>
+            </thead>
+            <tbody id="mcq-results-body"></tbody>
+          </table>
+        </div>
+
+        <div class="results-section">
+          <h3>Partie 2 — Analyse de code <span class="tag">6 pts</span></h3>
+          <p style="color: var(--text-muted); font-size: 14px">
+            Soumis — correction manuelle par le formateur.
+          </p>
+        </div>
+
+        <div class="results-section">
+          <h3>Partie 3 — Réécriture HTML <span class="tag">6 pts</span></h3>
+          <p style="color: var(--text-muted); font-size: 14px">
+            Soumis — correction manuelle par le formateur.
+          </p>
+        </div>
+
+        <div class="results-final-msg">
+          🎓 Votre score final sur 20 pts vous sera communiqué par votre
+          formateur après correction des parties 2 et 3.
+        </div>
+
+        <button class="btn-print" onclick="window.print()">
+          🖨️ Imprimer / Sauvegarder en PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Save indicator -->
+    <div class="save-indicator" id="save-indicator">✓ Sauvegardé</div>
+    <script src="myskillcert.js" defer></script>
+  </body>
+</html>
